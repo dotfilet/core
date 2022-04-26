@@ -1,0 +1,45 @@
+#!/usr/bin/env zsh
+
+FILET_HOME="${FILET_HOME:-${0:A:h:h}}"
+FILET_SRC="${FILET_HOME}"/src
+
+source "${FILET_SRC}"/logging.sh
+
+main() (
+  log
+
+  positional=()
+  flags=()
+  for argument in "${@}"; do
+    if [[ "${argument}" =~ ^-+ ]]; then
+      flags+=("${argument}")
+    else
+      positional+=("${argument}")
+    fi
+  done
+
+  if (( $flags[(Ie)--help] )) || (( $flags[(Ie)-h] )) || [[ ! -f $(command_file "${positional[1]}") ]]; then
+    if [[ "${positional[1]}" != "help" ]]; then
+      positional=(help "${positional[@]}")
+    fi
+  fi
+
+  source $(command_file "${positional[1]:-help}")
+  (
+    set -e
+    command_main "${positional[@]:1}" "${flags[@]}"
+  )
+  result=$?
+
+  log
+
+  return $result
+)
+
+command_file() {
+  echo "${FILET_SRC}"/commands/"${1}".sh
+}
+
+
+
+main "$@"
