@@ -1,5 +1,7 @@
 source "${FILET_SRC}"/loading.sh
 
+# Command: apply
+
 command_apply_help() (
   log "Usage: {{cyan}}filet{{/}} {{yellow}}apply{{/}} {{magenta}}file.filet{{/}}"
 )

@@ -1,3 +1,5 @@
+# Logging
+
 autoload -U colors
 colors
 

@@ -5,6 +5,8 @@ source "${FILET_SRC}"/logging.sh
 source "${FILET_SRC}"/commands/apply.sh
 source "${FILET_SRC}"/commands/help.sh
 
+# Entry Point
+
 main() (
   log
 

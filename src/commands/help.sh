@@ -1,3 +1,5 @@
+# Command: help
+
 command_help_main() (
   command="${1}"
 

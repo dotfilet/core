@@ -1,3 +1,5 @@
+source "${FILET_SRC}"/script-environment.sh
+
 evaluate_script() {
   script="${1}"
 
@@ -5,9 +7,7 @@ evaluate_script() {
     fail "Can't locate filet script {{magenta}}${script}{{/}} ({{magenta}}${script:A}{{/}})"
   fi
   
-  if [[ ! -v FILET_SCRIPT_ENVIRONMENT_LOADED ]]; then
-    source "${FILET_SRC}"/script-environment.sh 
-    FILET_SCRIPT_ENVIRONMENT_LOADED=yes
+  if [[ ! -v FILET_ROOT_SCRIPT ]]; then
     FILET_ROOT_SCRIPT="${script:A}"
     FILET_ROOT_DIR="${script:A:h}"
     FILET_STATE_DIR="${FILET_ROOT_DIR}/.filet"

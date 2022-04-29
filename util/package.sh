@@ -11,8 +11,8 @@ process_file() (
   while read -r line; do
     if [[ "${line}" =~ ^FILET_SRC= ]]; then 
       # skip
-    elif [[ "${line}" =~ '^source (.*FILET_SRC.*)' ]]; then
-      process_file $(eval echo "${match[1]}")
+    elif [[ "${line}" =~ '^source "\${FILET_SRC}"/(.+)\.sh' ]]; then
+      process_file "${FILET_SRC}"/"${match[1]}".sh
     else
       echo "${line}"
     fi
