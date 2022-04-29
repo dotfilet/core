@@ -1,9 +1,107 @@
 #!/usr/bin/env zsh
 
-FILET_HOME="${FILET_HOME:-${0:A:h:h}}"
-FILET_SRC="${FILET_HOME}"/src
+COLOR_BLACK="[30m"
+COLOR_RED="[31m"
+COLOR_GREEN="[32m"
+COLOR_YELLOW="[33m"
+COLOR_BLUE="[34m"
+COLOR_MAGENTA="[35m"
+COLOR_CYAN="[36m"
+COLOR_WHITE="[37m"
+COLOR_BRIGHT_BLACK="[30;1m"
+COLOR_BRIGHT_RED="[31;1m"
+COLOR_BRIGHT_GREEN="[32;1m"
+COLOR_BRIGHT_YELLOW="[33;1m"
+COLOR_BRIGHT_BLUE="[34;1m"
+COLOR_BRIGHT_MAGENTA="[35;1m"
+COLOR_BRIGHT_CYAN="[36;1m"
+COLOR_BRIGHT_WHITE="[37;1m"
+COLOR_RESET="[0m"
+COLOR_DIM="[2m"
+COLOR_DIM_RESET="[22m"
 
-source "${FILET_SRC}"/logging.sh
+log() (
+  echo "$@" >&2
+)
+
+log_debug() (
+  if [[ ! -v FILET_VERBOSE ]]; then return; fi
+  echo "${COLOR_DIM}$@${COLOR_DIM_RESET}"
+)
+
+log_warn() (
+  log "${COLOR_YELLOW}$@${COLOR_RESET}" 
+)
+
+log_error() (
+  log "${COLOR_RED}$@${COLOR_RESET}" 
+)
+
+fail() (
+  log_error "$@"
+  return 1
+)
+evaluate_script() {
+  script="${1}"
+
+  if [[ ! -f "${script}" ]]; then
+    fail "Can't locate filet script ${COLOR_MAGENTA}${script}${COLOR_RED} (${COLOR_MAGENTA}${script:A}${COLOR_RED})"
+  fi
+  
+  if [[ ! -v FILET_SCRIPT_ENVIRONMENT_LOADED ]]; then
+    source "${FILET_SRC}"/script-environment.sh 
+    FILET_SCRIPT_ENVIRONMENT_LOADED=yes
+    FILET_ROOT_SCRIPT="${script:A}"
+    FILET_ROOT_DIR="${script:A:h}"
+    FILET_STATE_DIR="${FILET_ROOT_DIR}/.filet"
+    FILET_REPOSITORIES=()
+  fi
+
+  previous_module_root="${FILET_CURRENT_MODULE_ROOT}"
+  FILET_CURRENT_MODULE_ROOT="${script:A:h}"
+
+  source "${script}"
+
+  FILET_CURRENT_MODULE_ROOT="${previous_module_root}"
+}
+
+command_apply_help() (
+  log "Usage: ${COLOR_CYAN}filet ${COLOR_YELLOW}apply ${COLOR_MAGENTA}file.filet${COLOR_RESET}"
+)
+
+command_apply_main() (
+  root_script="${1}"
+  if [[ "${root_script}" == "" ]]; then
+    command_apply_help
+    return 1
+  fi
+
+  cd "${root_script:h}"
+  evaluate_script "${root_script}"
+)
+command_help_main() (
+  command="${1}"
+
+  if [[ "${command}" == "" ]]; then
+    default_help
+  elif ! is_function "command_${command}_main"; then
+    log_error "Unknown command: ${COLOR_YELLOW}${command}${COLOR_RESET}"
+    log
+    default_help
+  elif ! is_function "command_${command}_help"; then
+    log_error "The ${COLOR_YELLOW}${command}${COLOR_RED} command failed to implement command_${command}_help"
+    log
+    default_help
+  else
+    "command_${command}_help"
+  fi
+
+  exit 1
+)
+
+default_help() (
+  log "Usage: ${COLOR_CYAN}filet ${COLOR_YELLOW}command${COLOR_RESET}"
+)
 
 main() (
   log
@@ -18,16 +116,15 @@ main() (
     fi
   done
 
-  if (( $flags[(Ie)--help] )) || (( $flags[(Ie)-h] )) || [[ ! -f $(command_file "${positional[1]}") ]]; then
+  if (( $flags[(Ie)--help] )) || (( $flags[(Ie)-h] )) || ! is_function "command_${positional[1]}_main"; then
     if [[ "${positional[1]}" != "help" ]]; then
       positional=(help "${positional[@]}")
     fi
   fi
-
-  source $(command_file "${positional[1]:-help}")
+  
   (
     set -e
-    command_main "${positional[@]:1}" "${flags[@]}"
+    "command_${positional[1]}_main" "${positional[@]:1}" "${flags[@]}"
   )
   result=$?
 
@@ -36,10 +133,8 @@ main() (
   return $result
 )
 
-command_file() {
-  echo "${FILET_SRC}"/commands/"${1}".sh
-}
-
-
+is_function() (
+  typeset -f "${1}" > /dev/null
+)
 
 main "$@"

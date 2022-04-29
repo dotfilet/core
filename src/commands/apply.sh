@@ -1,13 +1,13 @@
 source "${FILET_SRC}"/loading.sh
 
-command_help() (
+command_apply_help() (
   log "Usage: ${COLOR_CYAN}filet ${COLOR_YELLOW}apply ${COLOR_MAGENTA}file.filet${COLOR_RESET}"
 )
 
-command_main() (
+command_apply_main() (
   root_script="${1}"
   if [[ "${root_script}" == "" ]]; then
-    command_help
+    command_apply_help
     return 1
   fi
 
