@@ -44,14 +44,17 @@ import_path() {
 
 use() {
   module="${1}"
+  variable_name="${module:u:gs/-/_/}"
 
   # Only use each module once.
-  env_flag="FILET_MODULE_LOADED_${module:u}"
+  env_flag="FILET_MODULE_LOADED_${variable_name}"
   if (( ${(P)+env_flag} )); then return; fi
   eval "${env_flag}=yes"
   log_debug "use ${module}"
 
   module_path=$(resolve_module "${module}")
+  eval "FILET_MODULE_ROOT_${variable_name}=${module_path:h}"
+
   evaluate_script "${module_path}"
 }
 

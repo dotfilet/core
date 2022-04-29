@@ -14,5 +14,10 @@ evaluate_script() {
     FILET_REPOSITORIES=()
   fi
 
+  previous_module_root="${FILET_CURRENT_MODULE_ROOT}"
+  FILET_CURRENT_MODULE_ROOT="${script:A:h}"
+
   source "${script}"
+
+  FILET_CURRENT_MODULE_ROOT="${previous_module_root}"
 }
