@@ -40,7 +40,7 @@ log() (
 
 log_debug() (
   if [[ ! -v FILET_VERBOSE ]]; then return; fi
-  echo "{{dim}}$@"
+  log "{{dim}}$@"
 )
 
 log_warn() (
