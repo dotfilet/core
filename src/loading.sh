@@ -2,7 +2,7 @@ evaluate_script() {
   script="${1}"
 
   if [[ ! -f "${script}" ]]; then
-    fail "Can't locate filet script ${COLOR_MAGENTA}${script}${COLOR_RED} (${COLOR_MAGENTA}${script:A}${COLOR_RED})"
+    fail "Can't locate filet script {{magenta}}${script}{{/}} ({{magenta}}${script:A}{{/}})"
   fi
   
   if [[ ! -v FILET_SCRIPT_ENVIRONMENT_LOADED ]]; then

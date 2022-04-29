@@ -1,38 +1,52 @@
-COLOR_BLACK="\033[30m"
-COLOR_RED="\033[31m"
-COLOR_GREEN="\033[32m"
-COLOR_YELLOW="\033[33m"
-COLOR_BLUE="\033[34m"
-COLOR_MAGENTA="\033[35m"
-COLOR_CYAN="\033[36m"
-COLOR_WHITE="\033[37m"
-COLOR_BRIGHT_BLACK="\033[30;1m"
-COLOR_BRIGHT_RED="\033[31;1m"
-COLOR_BRIGHT_GREEN="\033[32;1m"
-COLOR_BRIGHT_YELLOW="\033[33;1m"
-COLOR_BRIGHT_BLUE="\033[34;1m"
-COLOR_BRIGHT_MAGENTA="\033[35;1m"
-COLOR_BRIGHT_CYAN="\033[36;1m"
-COLOR_BRIGHT_WHITE="\033[37;1m"
-COLOR_RESET="\033[0m"
-COLOR_DIM="\033[2m"
-COLOR_DIM_RESET="\033[22m"
+autoload -U colors
+colors
+
+color_format() (
+  string="${@}"
+  stack=(default)
+  
+  while [[ "${string}" =~ '{{([^}]+)}}' ]]; do
+    echo -n "${string:0:($MBEGIN - 1)}"
+
+    color="${match[1]}"
+    if [[ "${color}" == "/" ]]; then
+      current="${stack[-1]}"
+      shift -p stack
+      if [[ "${current}" == "dim" ]]; then
+        echo -n "[22m"
+      else
+        color="${stack[-1]}"
+      fi
+    else
+      stack+=("${color}")
+    fi
+
+    if [[ "${color}" == "dim" ]]; then
+      echo -n "[2m"
+    else
+      echo -n "${fg[$color]}"
+    fi
+
+    string="${string:$MEND}"
+  done
+  echo -n "${string}"
+)
 
 log() (
-  echo "$@" >&2
+  echo $(color_format "$@[0m") >&2
 )
 
 log_debug() (
   if [[ ! -v FILET_VERBOSE ]]; then return; fi
-  echo "${COLOR_DIM}$@${COLOR_DIM_RESET}"
+  echo "{{dim}}$@"
 )
 
 log_warn() (
-  log "${COLOR_YELLOW}$@${COLOR_RESET}" 
+  log "{{yellow}}@" 
 )
 
 log_error() (
-  log "${COLOR_RED}$@${COLOR_RESET}" 
+  log "{{red}}$@" 
 )
 
 fail() (

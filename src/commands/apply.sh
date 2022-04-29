@@ -1,7 +1,7 @@
 source "${FILET_SRC}"/loading.sh
 
 command_apply_help() (
-  log "Usage: ${COLOR_CYAN}filet ${COLOR_YELLOW}apply ${COLOR_MAGENTA}file.filet${COLOR_RESET}"
+  log "Usage: {{cyan}}filet{{/}} {{yellow}}apply{{/}} {{magenta}}file.filet{{/}}"
 )
 
 command_apply_main() (

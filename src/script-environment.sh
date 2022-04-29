@@ -6,7 +6,7 @@ import() {
   elif [[ -d "${repository}" ]]; then
     import_path "${repository}"
   else
-    fail "Not able to resolve repository ${COLOR_YELLOW}${repository}${COLOR_RED} to import"
+    fail "Not able to resolve repository {{yellow}}${repository}{{/}} to import"
   fi
 }
 
@@ -35,7 +35,7 @@ import_path() {
   log_debug "import ${repository_path}"
 
   if [[ ! -d "${repository_path}" ]]; then
-    fail "Unable to import unknown directory ${COLOR_MAGENTA}${repository_path}${COLOR_RED} (${COLOR_MAGENTA}${repository_path}${COLOR_RED})"
+    fail "Unable to import unknown directory {{magenta}}${repository_path}{{/}} ({{magenta}}${repository_path}{{/}})"
   fi
 
   
@@ -71,7 +71,7 @@ resolve_module() {
     fi
   done
 
-  log_error "Unable to locate module ${COLOR_YELLOW}${module}${COLOR_RED} via search paths:"
+  log_error "Unable to locate module {{yellow}}${module}{{/}} via search paths:"
   log_error
   for repository in "${FILET_REPOSITORIES[@]}"; do
     log_error "  ${repository}"
