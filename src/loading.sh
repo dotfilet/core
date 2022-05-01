@@ -1,7 +1,7 @@
 source "${FILET_SRC}"/script-environment.sh
 
 evaluate_script() {
-  script="${1}"
+  local script="${1}"
 
   if [[ ! -f "${script}" ]]; then
     fail "Can't locate filet script {{magenta}}${script}{{/}} ({{magenta}}${script:A}{{/}})"
@@ -14,7 +14,7 @@ evaluate_script() {
     FILET_REPOSITORIES=()
   fi
 
-  previous_module_root="${FILET_CURRENT_MODULE_ROOT}"
+  local previous_module_root="${FILET_CURRENT_MODULE_ROOT}"
   FILET_CURRENT_MODULE_ROOT="${script:A:h}"
 
   source "${script}"

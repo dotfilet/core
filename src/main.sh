@@ -10,8 +10,9 @@ source "${FILET_SRC}"/commands/help.sh
 main() (
   log
 
-  positional=()
-  flags=()
+  local positional=()
+  local flags=()
+
   for argument in "${@}"; do
     if [[ "${argument}" =~ ^-+ ]]; then
       flags+=("${argument}")
@@ -30,7 +31,7 @@ main() (
     set -e
     "command_${positional[1]}_main" "${positional[@]:1}" "${flags[@]}"
   )
-  result=$?
+  local result=$?
 
   log
 

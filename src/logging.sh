@@ -4,8 +4,8 @@ autoload -U colors
 colors
 
 color_format() (
-  string="${@}"
-  stack=(default)
+  local string="${@}"
+  local stack=(default)
   
   while [[ "${string}" =~ '{{([^}]+)}}' ]]; do
     echo -n "${string:0:($MBEGIN - 1)}"

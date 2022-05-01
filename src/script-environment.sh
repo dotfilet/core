@@ -1,7 +1,7 @@
 # Script Environment
 
 import() {
-  repository="${1}"
+  local repository="${1}"
 
   if [[ "${repository}" =~ ^github: ]]; then
     import_git "https://github.com/${repository:7}"
@@ -13,10 +13,9 @@ import() {
 }
 
 import_git() {
-  url="${1}"
-  relative_path="${url:8}" # assuming https://…
-
-  cache_dir="${FILET_STATE_DIR}/repositories/${relative_path}"
+  local url="${1}"
+  local relative_path="${url:8}" # assuming https://…
+  local cache_dir="${FILET_STATE_DIR}/repositories/${relative_path}"
 
   if [[ -d "${cache_dir}" ]]; then
     # TODO: Make this an explicit command to sync?
@@ -33,20 +32,20 @@ import_git() {
 }
 
 import_path() {
-  repository_path="${1:A}"
+  local repository_path="${1:A}"
+
   log_debug "import ${repository_path}"
 
   if [[ ! -d "${repository_path}" ]]; then
     fail "Unable to import unknown directory {{magenta}}${repository_path}{{/}} ({{magenta}}${repository_path}{{/}})"
   fi
-
   
   FILET_REPOSITORIES+=("${repository_path}")
 }
 
 use() {
-  module="${1}"
-  variable_name="${module:u:gs/-/_/}"
+  local module="${1}"
+  local variable_name="${module:u:gs/-/_/}"
 
   # Only use each module once.
   env_flag="FILET_MODULE_LOADED_${variable_name}"
@@ -60,8 +59,8 @@ use() {
   evaluate_script "${module_path}"
 }
 
-resolve_module() {
-  module="${1}"
+resolve_module() (
+  local module="${1}"
 
   for repository in "${FILET_REPOSITORIES[@]}"; do
     if [[ -f "${repository}"/"${module}"/module.filet ]]; then
@@ -79,13 +78,12 @@ resolve_module() {
     log_error "  ${repository}"
   done
   return 1
-}
+)
 
-git_sync() {
-  destination="${1:A}"
-  url="${2}"
-  # TODO
-  # refspec="${3}"
+git_sync() (
+  local destination="${1:A}"
+  local url="${2}"
+
   log_debug "git_sync ${url} ${destination}"
 
   if [[ -d "${destination}"/.git ]]; then
@@ -93,4 +91,4 @@ git_sync() {
   else
     git clone --depth 1 "${url}" "${destination}"
   fi  
-}
+)

@@ -5,7 +5,7 @@ FILET_SRC="${FILET_HOME}"/src
 FILET_BIN="${FILET_HOME}"/bin
 
 process_file() (
-  filename="${1}"
+  local filename="${1}"
 
   IFS=""
   while read -r line; do

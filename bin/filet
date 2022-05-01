@@ -6,8 +6,8 @@ autoload -U colors
 colors
 
 color_format() (
-  string="${@}"
-  stack=(default)
+  local string="${@}"
+  local stack=(default)
   
   while [[ "${string}" =~ '{{([^}]+)}}' ]]; do
     echo -n "${string:0:($MBEGIN - 1)}"
@@ -60,7 +60,7 @@ fail() (
 # Script Environment
 
 import() {
-  repository="${1}"
+  local repository="${1}"
 
   if [[ "${repository}" =~ ^github: ]]; then
     import_git "https://github.com/${repository:7}"
@@ -72,10 +72,9 @@ import() {
 }
 
 import_git() {
-  url="${1}"
-  relative_path="${url:8}" # assuming https://…
-
-  cache_dir="${FILET_STATE_DIR}/repositories/${relative_path}"
+  local url="${1}"
+  local relative_path="${url:8}" # assuming https://…
+  local cache_dir="${FILET_STATE_DIR}/repositories/${relative_path}"
 
   if [[ -d "${cache_dir}" ]]; then
     # TODO: Make this an explicit command to sync?
@@ -92,20 +91,20 @@ import_git() {
 }
 
 import_path() {
-  repository_path="${1:A}"
+  local repository_path="${1:A}"
+
   log_debug "import ${repository_path}"
 
   if [[ ! -d "${repository_path}" ]]; then
     fail "Unable to import unknown directory {{magenta}}${repository_path}{{/}} ({{magenta}}${repository_path}{{/}})"
   fi
-
   
   FILET_REPOSITORIES+=("${repository_path}")
 }
 
 use() {
-  module="${1}"
-  variable_name="${module:u:gs/-/_/}"
+  local module="${1}"
+  local variable_name="${module:u:gs/-/_/}"
 
   # Only use each module once.
   env_flag="FILET_MODULE_LOADED_${variable_name}"
@@ -119,8 +118,8 @@ use() {
   evaluate_script "${module_path}"
 }
 
-resolve_module() {
-  module="${1}"
+resolve_module() (
+  local module="${1}"
 
   for repository in "${FILET_REPOSITORIES[@]}"; do
     if [[ -f "${repository}"/"${module}"/module.filet ]]; then
@@ -138,13 +137,12 @@ resolve_module() {
     log_error "  ${repository}"
   done
   return 1
-}
+)
 
-git_sync() {
-  destination="${1:A}"
-  url="${2}"
-  # TODO
-  # refspec="${3}"
+git_sync() (
+  local destination="${1:A}"
+  local url="${2}"
+
   log_debug "git_sync ${url} ${destination}"
 
   if [[ -d "${destination}"/.git ]]; then
@@ -152,10 +150,10 @@ git_sync() {
   else
     git clone --depth 1 "${url}" "${destination}"
   fi  
-}
+)
 
 evaluate_script() {
-  script="${1}"
+  local script="${1}"
 
   if [[ ! -f "${script}" ]]; then
     fail "Can't locate filet script {{magenta}}${script}{{/}} ({{magenta}}${script:A}{{/}})"
@@ -168,7 +166,7 @@ evaluate_script() {
     FILET_REPOSITORIES=()
   fi
 
-  previous_module_root="${FILET_CURRENT_MODULE_ROOT}"
+  local previous_module_root="${FILET_CURRENT_MODULE_ROOT}"
   FILET_CURRENT_MODULE_ROOT="${script:A:h}"
 
   source "${script}"
@@ -183,7 +181,7 @@ command_apply_help() (
 )
 
 command_apply_main() (
-  root_script="${1}"
+  local root_script="${1}"
   if [[ "${root_script}" == "" ]]; then
     command_apply_help
     return 1
@@ -195,7 +193,7 @@ command_apply_main() (
 # Command: help
 
 command_help_main() (
-  command="${1}"
+  local command="${1}"
 
   if [[ "${command}" == "" ]]; then
     default_help
@@ -223,8 +221,9 @@ default_help() (
 main() (
   log
 
-  positional=()
-  flags=()
+  local positional=()
+  local flags=()
+
   for argument in "${@}"; do
     if [[ "${argument}" =~ ^-+ ]]; then
       flags+=("${argument}")
@@ -243,7 +242,7 @@ main() (
     set -e
     "command_${positional[1]}_main" "${positional[@]:1}" "${flags[@]}"
   )
-  result=$?
+  local result=$?
 
   log
 

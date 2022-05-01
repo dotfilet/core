@@ -1,7 +1,7 @@
 # Command: help
 
 command_help_main() (
-  command="${1}"
+  local command="${1}"
 
   if [[ "${command}" == "" ]]; then
     default_help

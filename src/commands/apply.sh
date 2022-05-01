@@ -7,7 +7,7 @@ command_apply_help() (
 )
 
 command_apply_main() (
-  root_script="${1}"
+  local root_script="${1}"
   if [[ "${root_script}" == "" ]]; then
     command_apply_help
     return 1
