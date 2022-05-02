@@ -154,13 +154,23 @@ git_sync() (
 
 copy() (
   local destination="${1:A}"
+  local source="${2}"
+
+  if [[ "${source}" == "" ]]; then
+    if [[ "${destination}" == "$HOME"/* ]]; then
+      source="./${destination#"$HOME"/}"
+    else
+      fail "please provide a path to the file to copy (relative to the module)"
+    fi
+  fi
+
   cd "${FILET_CURRENT_MODULE_ROOT}"
-  local source="${2:A}"
+  source="${source:A}"
   cd -
 
   log_debug "copy ${destination} <- ${source}"
 
-  cp -f "${source}" "${destination}"
+  cp -rf "${source}" "${destination}"
 )
 
 evaluate_script() {
