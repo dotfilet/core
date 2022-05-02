@@ -45,7 +45,7 @@ import_path() {
 
 use() {
   local module="${1}"
-  local variable_name="${module:u:gs/-/_/}"
+  local variable_name="${${module//[.\/-]/_}:u}"
 
   # Only use each module once.
   env_flag="FILET_MODULE_LOADED_${variable_name}"
@@ -61,6 +61,26 @@ use() {
 
 resolve_module() (
   local module="${1}"
+
+  if [[ "${module}" =~ ^".+/" ]]; then
+    cd "${FILET_CURRENT_MODULE_ROOT}"
+    local full_path="${module:A}"
+    cd -
+
+    if [[ -f "${full_path}"/module.filet ]]; then
+      echo "${full_path}"/module.filet
+      return 0
+    elif [[ -f "${full_path}".filet ]]; then
+      echo "${full_path}".filet
+      return 0
+    else
+      log_error "The local module ${module} must exist at either:"
+      log_error
+      log_error "  ${full_path}/module.filet"
+      log_error "  ${full_path}.filet"
+      return 1
+    fi
+  fi
 
   for repository in "${FILET_REPOSITORIES[@]}"; do
     if [[ -f "${repository}"/"${module}"/module.filet ]]; then
