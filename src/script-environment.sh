@@ -131,5 +131,10 @@ copy() (
 
   log_debug "copy ${destination} <- ${source}"
 
+  if [[ -d "${source}" ]]; then
+    source="${source}"/
+    destination="${destination}"/
+  fi
+
   cp -rf "${source}" "${destination}"
 )
