@@ -92,3 +92,14 @@ git_sync() (
     git clone --depth 1 "${url}" "${destination}"
   fi  
 )
+
+copy() (
+  local destination="${1:A}"
+  cd "${FILET_CURRENT_MODULE_ROOT}"
+  local source="${2:A}"
+  cd -
+
+  log_debug "copy ${destination} <- ${source}"
+
+  cp -f "${source}" "${destination}"
+)

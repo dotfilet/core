@@ -152,6 +152,17 @@ git_sync() (
   fi  
 )
 
+copy() (
+  local destination="${1:A}"
+  cd "${FILET_CURRENT_MODULE_ROOT}"
+  local source="${2:A}"
+  cd -
+
+  log_debug "copy ${destination} <- ${source}"
+
+  cp -f "${source}" "${destination}"
+)
+
 evaluate_script() {
   local script="${1}"
 
