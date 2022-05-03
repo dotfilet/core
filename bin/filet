@@ -171,6 +171,16 @@ git_sync() (
   fi  
 )
 
+url_sync() (
+  local destination="${1:A}"
+  local url="${2}"
+
+  log_debug "url_sync ${url} ${destination}"
+
+  mkdir -p "$(dirname "${destination}")"
+  curl --silent --location "${url}" --output "${destination}"
+)
+
 copy() (
   local destination="${1:A}"
   local source="${2}"
