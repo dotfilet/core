@@ -39,7 +39,6 @@ log() (
 )
 
 log_debug() (
-  if [[ ! -v FILET_VERBOSE ]]; then return; fi
   log "{{dim}}$@"
 )
 
