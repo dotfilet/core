@@ -18,9 +18,9 @@ import_git() {
   local cache_dir="${FILET_STATE_DIR}/repositories/${relative_path}"
 
   if [[ -d "${cache_dir}" ]]; then
-    # TODO: Make this an explicit command to sync?
-    #
-    # git -C "${cache_dir}" pull --depth 1 --rebase --quiet
+    log "Updating ${cache_dir} with latest commit from ${url}"
+
+    git -C "${cache_dir}" pull --depth 1 --rebase --quiet
   else
     log "Caching ${url} to ${cache_dir}…"
 
