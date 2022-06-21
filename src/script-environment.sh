@@ -18,9 +18,16 @@ import_git() {
   local cache_dir="${FILET_STATE_DIR}/repositories/${relative_path}"
 
   if [[ -d "${cache_dir}" ]]; then
-    log "Updating ${cache_dir} with latest commit from ${url}"
+    cd "${cache_dir}"
 
-    git -C "${cache_dir}" pull --depth 1 --rebase --quiet
+    local needs_stash=0
+    if [[ -n "$(git status --porcelain)" ]]; then needs_stash=1; fi
+
+    if (( needs_stash )); then git stash ; fi
+    git pull --depth 1 --rebase --quiet
+    if (( needs_stash )); then git stash pop; fi
+
+    cd -
   else
     log "Caching ${url} to ${cache_dir}…"
 
