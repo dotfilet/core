@@ -118,10 +118,10 @@ use() {
   eval "${env_flag}=yes"
   log_debug "use ${module}"
 
-  module_path=$(resolve_module "${module}")
-  eval "FILET_MODULE_ROOT_${variable_name}=${module_path:h}"
+  local filet_module_path=$(resolve_module "${module}")
+  eval "FILET_MODULE_ROOT_${variable_name}=${filet_module_path:h}"
 
-  evaluate_script "${module_path}"
+  evaluate_script "${filet_module_path}"
 }
 
 resolve_module() (
